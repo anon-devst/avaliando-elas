@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <!-- Torna a página responsiva em celulares -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Avaliação de Perfis</title>
+  
+  <!-- CDN do Plotly.js para gráfico 3D -->
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  
+  <style>
+    /* CSS básico + responsivo */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    form {
+      max-width: 600px;
+      margin: 0 auto 30px auto;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    label {
+      font-weight: bold;
+      margin-bottom: 5px;
+      display: inline-block;
+    }
+
+    select, input[type="number"] {
+      padding: 5px;
+      font-size: 1rem;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    button {
+      width: 200px;
+      padding: 10px;
+      font-size: 1rem;
+      cursor: pointer;
+      margin: 0 auto;
+      border: none;
+      border-radius: 4px;
+      background-color: #4CAF50;
+      color: #fff;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    #resultado {
+      text-align: center;
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    /* Container para o gráfico 3D */
+    #chart3D {
+      max-width: 600px;
+      margin: 0 auto;
+      height: 500px; /* altura para visualização do gráfico */
+    }
+
+    /* Responsividade adicional */
+    @media (max-width: 600px) {
+      form {
+        width: 90%;
+      }
+
+      button {
+        width: 100%;
+      }
+
+      #chart3D {
+        width: 95%;
+        height: 400px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Avaliação de Perfis</h1>
+
+  <form id="formAvaliacao">
+    <!-- Campos Primário, Secundário, Terciário -->
+    <div>
+      <label for="primario">Perfil Primário:</label>
+      <select id="primario" name="primario">
+        <option value="1">1. Populares e Vaidosas</option>
+        <option value="2">2. Alternativas e Diferentonas</option>
+        <option value="3">3. Intelectuais e Nerds</option>
+        <option value="4">4. Feministas e Ativistas</option>
+        <option value="5">5. Boêmias e Artísticas</option>
+        <option value="6">6. Esportivas e Fitness</option>
+        <option value="7">7. Conectadas à Natureza</option>
+        <option value="8">8. Rebeldes e Ousadas</option>
+        <option value="9">9. Tradicionais e Ligadas à Família</option>
+        <option value="10">10. Delicadas e Fofas</option>
+      </select>
+    </div>
+
+    <div>
+      <label for="secundario">Perfil Secundário:</label>
+      <select id="secundario" name="secundario">
+        <option value="1">1. Populares e Vaidosas</option>
+        <option value="2">2. Alternativas e Diferentonas</option>
+        <option value="3">3. Intelectuais e Nerds</option>
+        <option value="4">4. Feministas e Ativistas</option>
+        <option value="5">5. Boêmias e Artísticas</option>
+        <option value="6">6. Esportivas e Fitness</option>
+        <option value="7">7. Conectadas à Natureza</option>
+        <option value="8">8. Rebeldes e Ousadas</option>
+        <option value="9">9. Tradicionais e Ligadas à Família</option>
+        <option value="10">10. Delicadas e Fofas</option>
+      </select>
+    </div>
+
+    <div>
+      <label for="terciario">Perfil Terciário:</label>
+      <select id="terciario" name="terciario">
+        <option value="1">1. Populares e Vaidosas</option>
+        <option value="2">2. Alternativas e Diferentonas</option>
+        <option value="3">3. Intelectuais e Nerds</option>
+        <option value="4">4. Feministas e Ativistas</option>
+        <option value="5">5. Boêmias e Artísticas</option>
+        <option value="6">6. Esportivas e Fitness</option>
+        <option value="7">7. Conectadas à Natureza</option>
+        <option value="8">8. Rebeldes e Ousadas</option>
+        <option value="9">9. Tradicionais e Ligadas à Família</option>
+        <option value="10">10. Delicadas e Fofas</option>
+      </select>
+    </div>
+
+    <!-- Campo Feia (1 a 8) -->
+    <div>
+      <label for="feia">Feia (1 a 8):</label>
+      <input type="number" id="feia" name="feia" min="1" max="8" value="1" />
+    </div>
+
+    <!-- Campo Gorda (Select) -->
+    <div>
+      <label for="gorda">Gorda (1 a 8):</label>
+      <select id="gorda" name="gorda">
+        <option value="1">1 (12%)</option>
+        <option value="2">2 (15%)</option>
+        <option value="3">3 (20%)</option>
+        <option value="4">4 (25%)</option>
+        <option value="5">5 (30%)</option>
+        <option value="6">6 (35%)</option>
+        <option value="7">7 (40%)</option>
+        <option value="8">8 (45%)</option>
+      </select>
+    </div>
+
+    <!-- Campo Concentração de Gordura (Select) -->
+    <div>
+      <label for="concentracao">Concentração (1 a 8):</label>
+      <select id="concentracao" name="concentracao">
+        <option value="1">1 (Nádegas)</option>
+        <option value="2">2 (Peito)</option>
+        <option value="3">3 (Cintura)</option>
+        <option value="4">4 (Quadril)</option>
+        <option value="5">5 (Panturrilha)</option>
+        <option value="6">6 (Coxas)</option>
+        <option value="7">7 (Barriga)</option>
+        <option value="8">8 (Costas)</option>
+      </select>
+    </div>
+
+    <!-- Botão de Geração -->
+    <button type="button" onclick="gerarAvaliacao()">Gerar Avaliação</button>
+  </form>
+
+  <!-- Exibição do resultado -->
+  <div id="resultado"></div>
+
+  <!-- Container para o gráfico 3D com Plotly -->
+  <div id="chart3D"></div>
+
+  <script>
+    function gerarAvaliacao() {
+      const primario = document.getElementById('primario').value;
+      const secundario = document.getElementById('secundario').value;
+      const terciario = document.getElementById('terciario').value;
+
+      const feia = document.getElementById('feia').value;
+      const gorda = document.getElementById('gorda').value;
+      const concentracao = document.getElementById('concentracao').value;
+
+      // Monta o resumo no formato (pX sX tX fX gX cX)
+      const resumo = `(p${primario} s${secundario} t${terciario} f${feia} g${gorda} c${concentracao})`;
+      document.getElementById('resultado').innerText = resumo;
+
+      // Gera/atualiza o gráfico 3D
+      gerarGrafico3D(feia, gorda, concentracao);
+    }
+
+    /*
+      Vamos criar um "bar chart" 3D manualmente, usando 3 linhas:
+        - Barra Feia em x=1
+        - Barra Gorda em x=2
+        - Barra Concentração em x=3
+
+      Cada barra vai de z=0 até z=valor. Usaremos "scatter3d" com "mode='lines+markers'".
+
+      Dessa forma, obtemos 3 barras verticais em 3D, semelhante a um bar chart
+      que se aproximaria do estilo do Matplotlib/Matlab.
+    */
+    function gerarGrafico3D(feia, gorda, concentracao) {
+      // Convertendo strings em número
+      const f = Number(feia);
+      const g = Number(gorda);
+      const c = Number(concentracao);
+
+      // Cada "barra" terá dois pontos: (x, y, 0) e (x, y, valor)
+      // Barra para Feia (x=1)
+      const traceFeia = {
+        x: [1, 1],
+        y: [0, 0],
+        z: [0, f],
+        mode: 'lines+markers',
+        type: 'scatter3d',
+        name: 'Feia',
+        marker: {
+          size: 5
+        },
+        line: {
+          width: 8
+        }
+      };
+
+      // Barra para Gorda (x=2)
+      const traceGorda = {
+        x: [2, 2],
+        y: [0, 0],
+        z: [0, g],
+        mode: 'lines+markers',
+        type: 'scatter3d',
+        name: 'Gorda',
+        marker: {
+          size: 5
+        },
+        line: {
+          width: 8
+        }
+      };
+
+      // Barra para Concentração (x=3)
+      const traceConcentracao = {
+        x: [3, 3],
+        y: [0, 0],
+        z: [0, c],
+        mode: 'lines+markers',
+        type: 'scatter3d',
+        name: 'Concentração',
+        marker: {
+          size: 5
+        },
+        line: {
+          width: 8
+        }
+      };
+
+      const data = [traceFeia, traceGorda, traceConcentracao];
+
+      const layout = {
+        title: 'Gráfico 3D - Feia x Gorda x Concentração',
+        showlegend: true,
+        scene: {
+          xaxis: { title: 'Variável (1=Feia, 2=Gorda, 3=Concentração)' },
+          yaxis: { title: 'Eixo Y (fixo em 0)' },
+          zaxis: { title: 'Valor (1 a 8)', range: [0, 8] }
+        },
+        margin: { l: 0, r: 0, b: 0, t: 40 },
+      };
+
+      Plotly.newPlot('chart3D', data, layout);
+    }
+  </script>
+</body>
+</html>
+
