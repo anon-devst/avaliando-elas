@@ -2,14 +2,14 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <!-- Torna a página responsiva em celulares -->
+  <!-- Para o layout responsivo em dispositivos móveis -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
+
   <title>Avaliação de Perfis</title>
-  
-  <!-- CDN do Plotly.js para gráfico 3D -->
-  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-  
+
+  <!-- CDN do Chart.js para gráfico 2D -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <style>
     /* CSS básico + responsivo */
     body {
@@ -38,7 +38,7 @@
       display: inline-block;
     }
 
-    select, input[type="number"] {
+    select {
       padding: 5px;
       font-size: 1rem;
       width: 100%;
@@ -68,14 +68,19 @@
       margin-bottom: 20px;
     }
 
-    /* Container para o gráfico 3D */
-    #chart3D {
+    /* Container para o gráfico 2D */
+    #chartContainer {
       max-width: 600px;
       margin: 0 auto;
-      height: 500px; /* altura para visualização do gráfico */
     }
 
-    /* Responsividade adicional */
+    canvas {
+      width: 100% !important;
+      height: auto !important;
+      /* Ajusta o canvas para ficar responsivo */
+    }
+
+    /* Responsividade adicional para telas menores */
     @media (max-width: 600px) {
       form {
         width: 90%;
@@ -85,21 +90,19 @@
         width: 100%;
       }
 
-      #chart3D {
+      #chartContainer {
         width: 95%;
-        height: 400px;
       }
     }
   </style>
 </head>
 <body>
-
   <h1>Avaliação de Perfis</h1>
 
   <form id="formAvaliacao">
     <!-- Campos Primário, Secundário, Terciário -->
     <div>
-      <label for="primario">Perfil Primário:</label>
+      <label for="primario">Perfil Primário (p):</label>
       <select id="primario" name="primario">
         <option value="1">1. Populares e Vaidosas</option>
         <option value="2">2. Alternativas e Diferentonas</option>
@@ -115,7 +118,7 @@
     </div>
 
     <div>
-      <label for="secundario">Perfil Secundário:</label>
+      <label for="secundario">Perfil Secundário (s):</label>
       <select id="secundario" name="secundario">
         <option value="1">1. Populares e Vaidosas</option>
         <option value="2">2. Alternativas e Diferentonas</option>
@@ -131,7 +134,7 @@
     </div>
 
     <div>
-      <label for="terciario">Perfil Terciário:</label>
+      <label for="terciario">Perfil Terciário (t):</label>
       <select id="terciario" name="terciario">
         <option value="1">1. Populares e Vaidosas</option>
         <option value="2">2. Alternativas e Diferentonas</option>
@@ -146,15 +149,24 @@
       </select>
     </div>
 
-    <!-- Campo Feia (1 a 8) -->
+    <!-- Campo Feia (select 1 a 8) -->
     <div>
-      <label for="feia">Feia (1 a 8):</label>
-      <input type="number" id="feia" name="feia" min="1" max="8" value="1" />
+      <label for="feia">Feia (f):</label>
+      <select id="feia" name="feia">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+      </select>
     </div>
 
     <!-- Campo Gorda (Select) -->
     <div>
-      <label for="gorda">Gorda (1 a 8):</label>
+      <label for="gorda">Gorda (g):</label>
       <select id="gorda" name="gorda">
         <option value="1">1 (12%)</option>
         <option value="2">2 (15%)</option>
@@ -167,18 +179,33 @@
       </select>
     </div>
 
-    <!-- Campo Concentração de Gordura (Select) -->
+    <!-- Novo Campo Peito (Select 1 a 8) -->
     <div>
-      <label for="concentracao">Concentração (1 a 8):</label>
-      <select id="concentracao" name="concentracao">
-        <option value="1">1 (Nádegas)</option>
-        <option value="2">2 (Peito)</option>
-        <option value="3">3 (Cintura)</option>
-        <option value="4">4 (Quadril)</option>
-        <option value="5">5 (Panturrilha)</option>
-        <option value="6">6 (Coxas)</option>
-        <option value="7">7 (Barriga)</option>
-        <option value="8">8 (Costas)</option>
+      <label for="peito">Peito (pe):</label>
+      <select id="peito" name="peito">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+      </select>
+    </div>
+
+    <!-- Novo Campo Bunda (Select 0 a 8) -->
+    <div>
+      <label for="bunda">Bunda (b):</label>
+      <select id="bunda" name="bunda">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
       </select>
     </div>
 
@@ -189,109 +216,76 @@
   <!-- Exibição do resultado -->
   <div id="resultado"></div>
 
-  <!-- Container para o gráfico 3D com Plotly -->
-  <div id="chart3D"></div>
+  <!-- Container para o gráfico 2D (Chart.js) -->
+  <div id="chartContainer">
+    <canvas id="myChart"></canvas>
+  </div>
 
   <script>
+    let chartRef = null;
+
     function gerarAvaliacao() {
+      // Pegando os valores
       const primario = document.getElementById('primario').value;
       const secundario = document.getElementById('secundario').value;
       const terciario = document.getElementById('terciario').value;
 
       const feia = document.getElementById('feia').value;
       const gorda = document.getElementById('gorda').value;
-      const concentracao = document.getElementById('concentracao').value;
+      const peito = document.getElementById('peito').value;
+      const bunda = document.getElementById('bunda').value;
 
-      // Monta o resumo no formato (pX sX tX fX gX cX)
-      const resumo = `(p${primario} s${secundario} t${terciario} f${feia} g${gorda} c${concentracao})`;
+      // Monta o resumo: (pX sX tX fX gX peX bX)
+      const resumo = `(p${primario} s${secundario} t${terciario} f${feia} g${gorda} pe${peito} b${bunda})`;
       document.getElementById('resultado').innerText = resumo;
 
-      // Gera/atualiza o gráfico 3D
-      gerarGrafico3D(feia, gorda, concentracao);
+      // Gera/Atualiza o gráfico 2D
+      gerarGrafico2D(feia, gorda, peito, bunda);
     }
 
-    /*
-      Vamos criar um "bar chart" 3D manualmente, usando 3 linhas:
-        - Barra Feia em x=1
-        - Barra Gorda em x=2
-        - Barra Concentração em x=3
+    // Função para gerar/atualizar o gráfico de barras 2D
+    function gerarGrafico2D(f, g, p, b) {
+      const ctx = document.getElementById('myChart').getContext('2d');
 
-      Cada barra vai de z=0 até z=valor. Usaremos "scatter3d" com "mode='lines+markers'".
+      // Se já existe um gráfico, destrói antes de criar outro
+      if (chartRef) {
+        chartRef.destroy();
+      }
 
-      Dessa forma, obtemos 3 barras verticais em 3D, semelhante a um bar chart
-      que se aproximaria do estilo do Matplotlib/Matlab.
-    */
-    function gerarGrafico3D(feia, gorda, concentracao) {
-      // Convertendo strings em número
-      const f = Number(feia);
-      const g = Number(gorda);
-      const c = Number(concentracao);
-
-      // Cada "barra" terá dois pontos: (x, y, 0) e (x, y, valor)
-      // Barra para Feia (x=1)
-      const traceFeia = {
-        x: [1, 1],
-        y: [0, 0],
-        z: [0, f],
-        mode: 'lines+markers',
-        type: 'scatter3d',
-        name: 'Feia',
-        marker: {
-          size: 5
+      chartRef = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Feia (f)', 'Gorda (g)', 'Peito (p)', 'Bunda (b)'],
+          datasets: [{
+            label: 'Valores',
+            data: [f, g, p, b],  // Recebe strings, mas Chart.js converte para num se possível
+            backgroundColor: [
+              'rgba(255, 99, 132, 0.6)',   // Feia
+              'rgba(54, 162, 235, 0.6)',   // Gorda
+              'rgba(255, 206, 86, 0.6)',   // Peito
+              'rgba(75, 192, 192, 0.6)'    // Bunda
+            ],
+            borderColor: [
+              'rgba(255, 99, 132, 1)',
+              'rgba(54, 162, 235, 1)',
+              'rgba(255, 206, 86, 1)',
+              'rgba(75, 192, 192, 1)'
+            ],
+            borderWidth: 1
+          }]
         },
-        line: {
-          width: 8
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true,
+              // Se quisermos limitar até 8 (pois feia, gorda, peito e bunda vão até 8):
+              max: 8
+            }
+          }
         }
-      };
-
-      // Barra para Gorda (x=2)
-      const traceGorda = {
-        x: [2, 2],
-        y: [0, 0],
-        z: [0, g],
-        mode: 'lines+markers',
-        type: 'scatter3d',
-        name: 'Gorda',
-        marker: {
-          size: 5
-        },
-        line: {
-          width: 8
-        }
-      };
-
-      // Barra para Concentração (x=3)
-      const traceConcentracao = {
-        x: [3, 3],
-        y: [0, 0],
-        z: [0, c],
-        mode: 'lines+markers',
-        type: 'scatter3d',
-        name: 'Concentração',
-        marker: {
-          size: 5
-        },
-        line: {
-          width: 8
-        }
-      };
-
-      const data = [traceFeia, traceGorda, traceConcentracao];
-
-      const layout = {
-        title: 'Gráfico 3D - Feia x Gorda x Concentração',
-        showlegend: true,
-        scene: {
-          xaxis: { title: 'Variável (1=Feia, 2=Gorda, 3=Concentração)' },
-          yaxis: { title: 'Eixo Y (fixo em 0)' },
-          zaxis: { title: 'Valor (1 a 8)', range: [0, 8] }
-        },
-        margin: { l: 0, r: 0, b: 0, t: 40 },
-      };
-
-      Plotly.newPlot('chart3D', data, layout);
+      });
     }
   </script>
 </body>
 </html>
-
